@@ -1,0 +1,66 @@
+---
+title: "ProjectBay"
+author: "Marhawe Asmerom"
+date: "5/5/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+library(MASS)
+library(readxl)
+data <- read_excel("RealEstate.xls")
+
+## Random sample of 100
+index <- sample(c(1:350), size=100, replace =F)
+newData <- data[c(index),]
+save(newData, file = "newData.Rdata")
+
+
+# Naming Variables
+
+## Sale Price
+price <- newData$`Sale Price`
+logPrice <- log(price)
+
+## Age
+age <- newData$Age
+## Percent College - % in neighborhood who graduated college
+college <- newData$`Pct College`
+## # of Bedrooms
+br <- newData$Bedrooms
+## Lot size
+size <- newData$`Lot Size`
+
+fullMod <- lm(log(price) ~ age + college + br + size)
+stepMod <- stepAIC(fullMod, direction = "both", trace = 1)
+
+summary(stepMod)
+plot(stepMod)
+
+finalMod <- lm(log(price) ~ age + college + br + size)
+summary(finalMod)
+residuals(finalMod)
+coefficients(finalMod)
+attributes(finalMod)
+plot(finalMod)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
